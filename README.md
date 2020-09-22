@@ -1,6 +1,6 @@
 This is a curated collection of Javascript games that have been modified to run in a browser and have no external dependencies. i.e. An Internet connection is not required, nor is running a local server required.
 
-To run, unzip [arcade.zip](arcade.zip), and open `index.html` in your browser.
+To run, unzip [arcade.zip](arcade.zip), and open `./arcade/index.html` in your browser.
 
 ### Keys
  Key   |  Action
