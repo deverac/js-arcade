@@ -11,10 +11,10 @@ __Space__      | Open an info window showing the keys for the game and links to 
 
 To exit it a game, navigate _Back_ in your browser.
 
-* Some games start with sounds on; some games start with sounds off; some games have no way to mute the sound.
-* Sound levels vary a lot, between games.
-* Some games include help pages; most do not.
-* Some games require Local Storage or Cookies.
+ * Some games start with sounds on; some games start with sounds off; some games have no way to mute the sound.
+ * Sound levels vary a lot, between games.
+ * Some games include help pages; most do not.
+ * Some games require Local Storage or Cookies.
 
 
   Game |  Description | License
