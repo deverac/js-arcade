@@ -1,0 +1,683 @@
+<!-- DHTML Lemmings(TM) - GNU Copyright (c) 2004 by crisp / freesoftware[at]xs4all.nl -->
+<!DOCTYPE html> 
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="description" content="DHTML Lemmings by crisp">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1" />
+<meta name="keywords" content="dhtml lemmings javascript crisp">
+<meta name="viewport" content="width=device-width">
+<title>DHTML Lemmings! - by crisp</title>
+<link rel="stylesheet" href="./style/style.css" type="text/css">
+
+<script type="text/javascript" src="./js/standards.js"></script>
+<script type="text/javascript" src="./js/control.js"></script>
+<script type="text/javascript" src="./js/scroll.js"></script>
+<script type="text/javascript" src="./js/animate.js"></script>
+<script type="text/javascript" src="./js/lemmings.js"></script>
+<script type="text/javascript" src="./levels/codebase/all_codebase.js"></script>
+<script type="text/javascript" src="./levels/all_levels.js"></script>
+
+
+<style type='text/css'>
+#menu_page {
+    display: none;
+}
+#gameselect_page {
+    display: none;
+}
+#lemmings_page {
+    display: none;
+}
+#result_page {
+    display: none;
+}
+</style>
+<script type="text/javascript">
+
+// Togling animations works, but various 'static' images (e.g. 'gfx/exit2.gif')
+// do not exist and 'file not found' exception will be thrown. 
+
+function build_level(f, b) {
+    var t = f[5];
+    var x = {
+        init_lemmings:    f[0],
+        min_release_rate: f[1],
+        play_time:        f[2],
+        save_lemmings:    f[3],
+        music:            f[4], // level_music
+        lemming_types: {
+            climb:   t[0],
+            float:   t[1],
+            explode: t[2],
+            block:   t[3],
+            build:   t[4],
+            bash:    t[5],
+            mine:    t[6],
+            dig:     t[7]
+        },
+        base: {
+            level_start:b[0],
+            start_pos:  b[1],
+            // We can't decompress here because certain variable are not defined.
+            // binmap: decompress_level(b[4])
+            images: {}, // b[2]
+            traps:      b[3],
+            encoded:    b[4]
+        }
+    };
+
+    for (a in b[2]) {
+        var v = b[2][a];
+        x.base.images[a] = {
+            type:   v[0],
+            file:   v[1],
+            height: v[2],
+            width:  v[3],
+            top:    v[4],
+            left:   v[5],
+            zindex: v[6]
+        }
+    }
+    return x;
+}
+
+function getCodebase(lvl) {
+    return codebases[lvl[6]];
+}
+
+function load_codebase() {
+    var lvl = getLevel(state.user.rating, state.user.selected_num);
+    var cbase = getCodebase(lvl);
+    state.level = build_level(lvl, cbase);
+    preload_images();
+}
+
+
+screen.orientation = "landscape-primary";
+
+var lem_sounds = {};
+var musicLoaded = false;
+var soundEnabled = true;
+var playing = false;
+
+var state = {
+    user: {
+        rating: null,
+        selected_num: 0,
+        music: false,
+        sounds: false,
+        animations: true
+    },
+    paused: 0,
+    level: null,
+    cheatmode: 1,
+    gameOverGuard: 0
+};
+
+var code = 'A';
+
+function launchIntoFullscreen() {
+  var element = document.body;
+  if (!element)
+    return;
+  if(element.requestFullscreen) {
+    element.requestFullscreen(); // this is async
+  } else if(element.mozRequestFullScreen) {
+    element.mozRequestFullScreen();
+  } else if(element.webkitRequestFullscreen) {
+    element.webkitRequestFullscreen();
+  } else if(element.msRequestFullscreen) {
+    element.msRequestFullscreen();
+  }
+}
+
+function set_needed_msg(needed) {
+    document.getElementById('needed_msg').innerText = 'You needed ' + needed;
+}
+
+function set_rescued_msg(rescued) {
+    document.getElementById('rescued_msg').innerText = 'You rescued ' + rescued;
+}
+
+function set_outro_msg(rescued, needed) {
+    var title = '';
+    var text = '';
+    var numLevels = getNumLevels(state.user.rating);
+    var nxtlvl = state.user.selected_num + 1;
+
+    if (nxtlvl >= numLevels && rescued >= needed) {
+        title = 'You made it!';
+        text = "Sorry, that's all for this difficulty at the moment, check back later for more levels!";
+    } else if (rescued == state.level.init_lemmings) {
+        title = 'Superb!';
+        text = 'You rescued every lemming&trade; on that level. Can you do it again... ?';
+    } else if (rescued > needed) {
+        title = 'Golly!';
+        text = "You totally stormed that level! Let's see if you can storm the next...";
+    } else if (rescued == needed) {
+        title = 'Right on!';
+        text = "You can't get much closer than that. Let's try the next...";
+    } else if (rescued == 0) {
+        title = 'Rock Bottom!'
+        text = 'I hope for your sake that you nuked that level.';
+    } else {
+        title = 'Mayhem!';
+        text = 'A little more practice on this level is definitely recommended.';
+    }
+
+    document.getElementById('outro_title').innerText = title;
+    document.getElementById('outro_text').innerText = text;
+
+    var lnk = document.getElementById('next_link');
+    if (nxtlvl < numLevels && rescued >= needed) {
+        lnk.style.visible='visible';
+        lnk.style.display='inline-block';
+    } else {
+        lnk.style.display = 'none';
+    }
+}
+
+function doinit() {
+
+    show_menu_page();
+}
+
+
+function next_level() {
+    state.user.selected_num += 1;
+    play();
+}
+
+function getHighestCompletedLevel(rat) {
+    var val = parseInt(localStorage.getItem(rat));
+    return (val >= 0 ? val : -1);
+}
+
+function setHighestCompletedLevel(rat, lvl) {
+    localStorage.setItem(rat, lvl);
+    var val = getHighestCompletedLevel(rat)
+    if (val != lvl) {
+        console.log('Failed to save!  key:'+rat+'  val:'+lvl);
+    }
+}
+
+function selectLevel(i, code) {
+
+    if (state.user.selected_num >= 0) {
+        document.getElementById('lvl'+state.user.selected_num).classList.remove('selected');
+    }
+
+    state.user.selected_num = i;
+    document.getElementById('lvl'+state.user.selected_num).classList.add('selected');
+
+    var cd = document.getElementById('code');
+
+    var highest_completed = getHighestCompletedLevel(state.user.rating);
+
+    if (highest_completed >= state.user.selected_num) {
+        cd.value = code;
+    } else {
+        cd.value = '';
+    }
+
+    if (cd.value == '') {
+        cd.focus();
+    }
+}
+
+function play_music_for_level(lvl) {
+    if (music_player) {
+        if (lvl < 10) {
+            lvl = '0' + lvl;
+        }
+        music_player.pause();
+        music_player.src = 'levels/music/level-' + lvl + '.ogg';
+    }
+}
+
+function play() {
+    state.gameOverGuard++;
+
+    var selected_level = state.user.selected_num;
+    var highest_completed = getHighestCompletedLevel(state.user.rating);
+    var code = document.getElementById('code').value.toUpperCase();
+    if (selected_level <= highest_completed + 1) {
+        // Continue.
+    } else {
+        if (code == '') {
+            if (selected_level > highest_completed + 1) {
+                alert('Please enter the code for level '+(selected_level + 1) + ' or select a lower level.');
+                document.getElementById('code').focus();
+                return;
+            }
+        } else {
+            if (code == 'BILLANDTED') {
+                cheatmode = 1;
+            } else if (code != getCode(state.user.rating, state.user.selected_num)) {
+                alert('Invalid code for level '+(selected_level + 1));
+                document.getElementById('code').focus();
+                return;
+            }
+        }
+    }
+
+    play_music_for_level(state.user.selected_num + 1);
+
+
+    resetPlayground();
+    resetControls();
+    resetGameVals();
+    show_lemmings_page();
+
+    if (! state.user.animations) {
+        stop_animations();
+    }
+}
+
+function setClickHandler(i, code) {
+    return () => {
+        selectLevel(i, code);
+    }
+}
+
+function setMouseOverHandler(elem) {
+    return () => {
+        elem.classList.add('ov');
+    }
+}
+
+function setMouseOutHandler(elem) {
+    return () => {
+        elem.classList.remove('ov');
+    }
+}
+
+function populate_game_list() {
+    var items = getListing(state.user.rating);
+    var chc = document.getElementById('choice');
+    var inp = document.getElementById('code');
+    var i;
+
+    inp.value = '';
+
+    chc.innerText = '';
+    for (i = 0; i < items.length; i++) {
+        var item = items[i];
+        var elem = document.createElement('div');
+        if (i == state.user.selected_num) {
+            elem.classList.add('selected');
+        }
+
+        elem.id = 'lvl'+i;
+        elem.onclick= setClickHandler(i, item.code);
+        elem.onmouseover = setMouseOverHandler(elem);
+        elem.onmouseout = setMouseOutHandler(elem);
+
+        var nam = document.createElement('span');
+        nam.innerText = (i+1)+'. '+item.name;
+
+        elem.appendChild(nam);
+
+        if (item.code && item.completed) {
+            var vin = document.createElement('img');
+            vin.src = "./img/vinkje.gif";
+            vin.width="9";
+            vin.height="9";
+            vin.alt="";
+            elem.append(vin);
+        }
+
+        chc.appendChild(elem);
+
+    }
+    if (getHighestCompletedLevel(state.user.rating) > 0) {
+        inp.value = getCode(state.user.rating, 0);
+    }
+}
+
+function hide_all_pages() {
+    document.getElementById('menu_page').style.display='none';
+    document.getElementById('gameselect_page').style.display='none';
+    document.getElementById('lemmings_page').style.display='none';
+    document.getElementById('result_page').style.display='none';
+}
+
+function show_menu_page() {
+    hide_all_pages();
+    document.getElementById('menu_page').style.visible='visible';
+    document.getElementById('menu_page').style.display='block';
+}
+
+function show_gameselect_page(rating) {
+    state.user.rating = rating;
+    hide_all_pages();
+    populate_game_list();
+    document.getElementById('game_title').innerText = 'Choose Game - rating: '+rating;
+    document.getElementById('gameselect_page').style.visible='visible';
+    document.getElementById('gameselect_page').style.display='block';
+}
+
+function show_lemmings_page() {
+    hide_all_pages();
+    document.getElementById('lemmings_page').style.visible='visible';
+    document.getElementById('lemmings_page').style.display='block';
+    load_codebase();
+}
+
+function show_result_page() {
+    hide_all_pages();
+    set_needed_msg(state.level.save_lemmings);
+    set_rescued_msg(lemmings_home);
+    set_outro_msg(lemmings_home, state.level.save_lemmings);
+    document.getElementById('result_page').style.visible='visible';
+    document.getElementById('result_page').style.display='block';
+}
+
+
+function viewPort() {
+    var h = window.innerHeight 
+    || document.documentElement.clientHeight 
+    || document.getElementsByTagName('body')[0].clientHeight;
+    var w = window.innerWidth 
+    || document.documentElement.clientWidth 
+    || document.getElementsByTagName('body')[0].clientWidth;
+
+    return {width : w, height : h};
+}
+
+
+
+var music_player = new Audio('levels/music/level-01.ogg');
+music_player.addEventListener('error', function (err) {
+    console.log('Error loading audio ' + err.srcElement.src);
+});
+music_player.addEventListener("canplaythrough", function () {
+    if (state.user.music) {
+        music_player.play();
+    }
+}, false);
+
+
+function writeSound(file, type, id, loop) {
+    lem_sounds[id] = new Audio('./html/sound/'+file);
+}
+
+function addSoundClips() {
+    writeSound('letsgo.ogg', 'ogg', 'letsgo', false);
+    writeSound('bang.ogg', 'ogg', 'bang', false);
+    writeSound('chain.ogg', 'ogg', 'chain', false);
+    writeSound('changeop.ogg', 'ogg', 'changeop', false);
+    writeSound('chink.ogg', 'ogg', 'chink', false);
+    writeSound('die.ogg', 'ogg', 'die', false);
+    writeSound('door.ogg', 'ogg', 'door', false);
+    writeSound('electric.ogg', 'ogg', 'electric', false);
+    writeSound('explode.ogg', 'ogg', 'explode', false);
+    writeSound('fire.ogg', 'ogg', 'fire', false);
+    writeSound('glug.ogg', 'ogg', 'glug', false);
+    writeSound('mantrap.ogg', 'ogg', 'mantrap', false);
+    writeSound('mousepre.ogg', 'ogg', 'mousepre', false);
+    writeSound('ohno.ogg', 'ogg', 'ohno', false);
+    writeSound('oing.ogg', 'ogg', 'oing', false);
+    writeSound('scrape.ogg', 'ogg', 'scrape', false);
+    writeSound('slicer.ogg', 'ogg', 'slicer', false);
+    writeSound('splash.ogg', 'ogg', 'splash', false);
+    writeSound('splat.ogg', 'ogg', 'splat', false);
+    writeSound('tenton.ogg', 'ogg', 'tenton', false);
+    writeSound('thud.ogg', 'ogg', 'thud', false);
+    writeSound('thunk.ogg', 'ogg', 'thunk', false);
+    writeSound('ting.ogg', 'ogg', 'ting', false);
+    writeSound('yippee.ogg', 'ogg', 'yippee', false);
+}
+
+
+function playsound(which) {
+    if (state.user.sounds && lem_sounds[which]) {
+        lem_sounds[which].play();
+    }
+}
+
+
+function playmusic() {
+    if (music_player) {
+        music_player.play();
+    }
+}
+
+function stopmusic() {
+    if (music_player) {
+        music_player.pause();
+    }
+}
+
+
+
+function toggle(what, onoff) {
+    if (what == 'music') {
+        state.user.music = onoff;
+        if (onoff) {
+            playmusic();
+        } else {
+            stopmusic();
+        }
+    } else if (what == 'sounds') {
+        state.user.sounds = onoff;
+    } else if (what == 'animations') {
+        state.user.animations = onoff;
+    }
+}
+
+function scaleStuff () {
+    const names = ['menu_content', 'gameselect_content', 'result_content'];
+
+	var vp = viewPort();
+
+    for (var i=0; i<names.length; i++) {
+        const idstr = names[i];
+
+        var b = document.getElementById (idstr);
+    	b.style.top = "10px";
+    	// b.style.height = ""+(vp.height - 60) + "px";
+        b.style.height = ""+(vp.height - 150) + "px";
+    }
+}
+
+function addHandler() {
+    var inp = document.getElementById('code');
+    inp.addEventListener("keyup", function(evt) {
+        if (evt.key === "Enter" || evt.keyCode == 13) {
+            play()
+        }
+    });
+}
+
+addSoundClips();
+
+window.onresize = scaleStuff;
+document.addEventListener ('DOMContentLoaded', function (e) {
+	scaleStuff ();
+    addHandler();
+});
+
+
+</script>
+</head>
+<body onload='doinit()'>
+
+<div id="menu_page">
+    <div class="content" id="menu_content">
+        <center>
+            <img id="logo" src="./img/logo.gif"  alt="" style="display: block; margin-top: 10px; width: 80%" />
+        </center>
+        <center>
+            <div>
+
+              <div>
+                <img src="./img/fun.gif"    id="fun"    border="0" onclick='show_gameselect_page("fun")'    style='width: 20%; margin: 10px' />
+                <img src="./img/tricky.gif" id="tricky" border="0" onclick='show_gameselect_page("tricky")' style='width: 20%; margin: 10px' />
+              </div>
+              <div>
+                <img src="./img/taxing.gif" id="taxing" border="0" onclick='show_gameselect_page("taxing")' style='width: 20%; margin: 10px' />
+                <img src="./img/mayhem.gif" id="mayhem" border="0" onclick='show_gameselect_page("mayhem")'  style='width: 20%; margin: 10px' />
+              </div>
+
+            </div>
+        </center>
+        <center>
+            <div id="options">
+              <input id="music" type="checkbox" onclick="toggle('music', this.checked)" /> Music<br />
+              <input id="sounds" type="checkbox" onclick="toggle('sounds', this.checked)" /> Sounds<br />
+              <!-- <input id="animations" type="checkbox" onclick="toggle('animations', this.checked)" checked /> Animations<br /> -->
+              <a href='html/help.html'>Help</a><br>
+            </div>
+        </center>
+        <img id="lemmingLeft" src="./img/lemming_left.gif" alt="" />
+        <img id="lemmingRight" src="./img/lemming_right.gif" alt="" />
+    </div>
+</div>
+
+
+
+
+<div id="gameselect_page">
+
+    <div class="content" id="gameselect_content">
+        <h1 id='game_title'>Choose Game</h1>
+        <center>
+            <div id="choice">
+            </div>
+        </center>
+
+        <div class="center" style="margin-top: 10px">
+            <center>
+                <span class='navigate'><span onfocus="this.blur()" onclick='show_menu_page()'>Menu</span></span>
+                <input style="text-align:center" type="text" id="code" value="" />
+                 <span class='navigate'><span onfocus="this.blur()" onclick='play()'>Play!</span></span>
+            </center>
+        </div>
+        <img id="lemmingLeft" src="./img/lemming_left.gif" alt="" />
+        <img id="lemmingRight" src="./img/lemming_right.gif" alt="" />
+    </div>
+</div>
+
+
+
+
+
+<div id="lemmings_page">
+    <div class="content" id='xaaa' style="overflow: scroll;border: 0px">
+      <div id="progressbar">&nbsp;</div>
+      <div id="playground">
+        <img id="target" src="./img/target.gif" alt="" />
+      </div>
+      <div id="scrollbar">
+        <div id="scrollbg"></div>
+        <img id="scrollLeft" src="./img/scroll_left.gif" alt="" />
+        <img id="scroller" src="./img/scroll_butt.gif" alt="" />
+        <img id="scrollRight" src="./img/scroll_right.gif" alt="" />
+      </div>
+    </div>
+    <div id="controls">
+      <div class="control">
+        <div class="relative">
+          <div class="num" id="num_climb">&nbsp;</div>
+          <img class="button" id="lemming_climb" src="./img/control_climb.gif" alt="" onmouseover="status_message('Choose Climber Skill')" onmouseout="status_message(0)" onmousedown="toggle_lemming('climb')" />
+        </div>
+      </div>
+      <div class="control">
+        <div class="relative">
+          <div class="num" id="num_float">&nbsp;</div>
+          <img class="button" id="lemming_float" src="./img/control_float.gif" alt="" onmouseover="status_message('Choose Floater Skill')" onmouseout="status_message(0)" onmousedown="toggle_lemming('float')" />
+        </div>
+      </div>
+      <div class="control">
+        <div class="relative">
+          <div class="num" id="num_explode">&nbsp;</div>
+          <img class="button" id="lemming_explode" src="./img/control_explode.gif" alt="" onmouseover="status_message('Choose Exploder Skill')" onmouseout="status_message(0)" onmousedown="toggle_lemming('explode')" />
+        </div>
+      </div>
+      <div class="control">
+        <div class="relative">
+          <div class="num" id="num_block">&nbsp;</div>
+          <img class="button" id="lemming_block" src="./img/control_block.gif" alt="" onmouseover="status_message('Choose Blocker Skill')" onmouseout="status_message(0)" onmousedown="toggle_lemming('block')" />
+        </div>
+      </div>
+      <div class="control">
+        <div class="relative">
+          <div class="num" id="num_build">&nbsp;</div>
+          <img class="button" id="lemming_build" src="./img/control_build.gif" alt="" onmouseover="status_message('Choose Builder Skill')" onmouseout="status_message(0)" onmousedown="toggle_lemming('build')" />
+        </div>
+      </div>
+      <div class="control">
+        <div class="relative">
+          <div class="num" id="num_bash">&nbsp;</div>
+          <img class="button" id="lemming_bash" src="./img/control_bash.gif" alt="" onmouseover="status_message('Choose Basher Skill')" onmouseout="status_message(0)" onmousedown="toggle_lemming('bash')" />
+        </div>
+      </div>
+      <div class="control">
+        <div class="relative">
+          <div class="num" id="num_mine">&nbsp;</div>
+          <img class="button" id="lemming_mine" src="./img/control_mine.gif" alt="" onmouseover="status_message('Choose Miner Skill')" onmouseout="status_message(0)" onmousedown="toggle_lemming('mine')" />
+        </div>
+      </div>
+      <div class="control">
+        <div class="relative">
+          <div class="num" id="num_dig">&nbsp;</div>
+          <img class="button" id="lemming_dig" src="./img/control_dig.gif" alt="" onmouseover="status_message('Choose Digger Skill')" onmouseout="status_message(0)" onmousedown="toggle_lemming('dig')" />
+        </div>
+      </div>
+      <div class="control">
+        <div class="relative">
+          <div class="num" id="num_more">&nbsp;</div>
+          <img class="button" id="release_more" src="./img/control_more.gif" alt="" onmouseover="status_message('Increase Lemmings release rate')" onmouseout="status_message(0)" onmousedown="toggle_release(+1)" onmouseup="stop_release()" />
+        </div>
+      </div>
+      <div class="control">
+        <div class="relative">
+          <div class="num" id="num_less">&nbsp;</div>
+          <img class="button" id="release_less" src="./img/control_less.gif" alt="" onmouseover="status_message('Decrease Lemmings release rate')" onmouseout="status_message(0)" onmousedown="toggle_release(-1)" onmouseup="stop_release()" />
+        </div>
+      </div>
+      <div class="control">
+        <img id="pause" class="button" src="./img/control_pause.gif" alt="" onmouseover="if (!paused) status_message('Pause the game'); else status_message('Continue the game');" onmouseout="status_message(0)" onmousedown="toggle_pause(this)" />
+      </div>
+      <div class="control">
+        <img id="speed" class="button" src="./img/control_speed.gif" alt="" onmouseover="status_message('Fast Forward mode')" onmouseout="status_message(0)" onmousedown="speed_up(this)" />
+      </div>
+      <div class="control">
+        <img id="nuke" class="button" src="./img/control_nuke.gif" alt="" onmouseover="status_message('Kill all Lemmings and end level')" onmouseout="status_message(0)" onmousedown="kill_em_all(this)" />
+      </div>
+    </div>
+    <div id="statusbar">
+      <div class="status" id="status">&nbsp;</div>
+      <div class="status" id="out">Out: 0</div>
+      <div class="status" id="home">Home: 0</div>
+      <div class="status" id="time">&nbsp;</div>
+    </div>
+</div>
+
+
+<div id="result_page">
+
+    <div class="content" id='result_content'>
+        <h1>All lemmings&trade; accounted for</h1>
+        <div class="center">
+            <div id='needed_msg'></div>
+            <div id='rescued_msg'></div>
+            <h2 id='outro_title'></h2>
+            <div id='outro_text'></div>
+        </div>
+
+        <h2 style="margin-top: 40px">
+            <div class='end_game_opt' onfocus="this.blur()" onclick="show_menu_page()">Menu</div>
+            <div class='end_game_opt' onfocus="this.blur()" onclick="play()">Again</div>
+            <div class='end_game_opt' onfocus="this.blur()" onclick="next_level()" id='next_link'>Next</div>
+        </h2>
+
+        <img id="lemmingLeft" src="./img/lemming_left.gif" alt="" />
+        <img id="lemmingRight" src="./img/lemming_right.gif" alt="" />
+    </div>
+</div>
+
+</body>
+</html>

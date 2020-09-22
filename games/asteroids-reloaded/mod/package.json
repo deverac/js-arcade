@@ -1,0 +1,15 @@
+{
+  "name": "asteroids-reloaded",
+  "description": "An updated version of Asteroids",
+  "scripts": {
+    "uglify-mathlib": "uglifyjs scripts/mathlib.js -o scripts/mathlib.min.js -c -m",
+    "uglify-gamelib": "uglifyjs scripts/gamelib.js -o scripts/gamelib.min.js -c -m",
+    "uglify-asteroids": "uglifyjs scripts/asteroids_main.js scripts/asteroids_player.js scripts/asteroids_weapons.js scripts/asteroids_enemies.js scripts/asteroids_effects.js scripts/asteroids_prerender.js -o scripts/asteroids.min.js -c -m --source-map",
+    "build": "npm run uglify-mathlib && npm run uglify-gamelib && npm run uglify-asteroids"
+  },
+  "author": "Kevin Roast",
+  "devDependencies": {
+    "uglify-js": "^3.10.4"
+  },
+  "dependencies": {}
+}

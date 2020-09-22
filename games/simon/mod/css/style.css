@@ -1,0 +1,22 @@
+body{
+  margin-top:20px;
+  background-color:black;
+  margin-bottom:2em;
+  overflow: hidden;
+}
+#info{
+  font-size: .75em;
+  color: #878b91;
+}
+
+.circuarButtons{
+  filter: drop-shadow(5px 5px 5px black);
+}
+.shadow {
+    -webkit-filter: drop-shadow( -5px -5px 5px #000 );
+            filter: drop-shadow( -5px -5px 5px #000 ); /* Same syntax as box-shadow, except 
+                                                       for the spread property */
+}
+#main {
+    transform: rotate(45deg);
+}

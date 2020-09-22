@@ -1,0 +1,264 @@
+<!DOCTYPE html> 
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="imagetoolbar" content="no">
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="description" content="DHTML Lemmings by crisp">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=false" />
+<meta name="keywords" content="dhtml lemmings javascript crisp">
+<meta name="viewport" content="width=device-width">
+<title>Lemmings&trade; - Help</title>
+
+<link rel="stylesheet" href="../style/style.css" type="text/css">
+
+<script type="text/javascript">
+    function viewPort() {
+        var h = window.innerHeight 
+        || document.documentElement.clientHeight 
+        || document.getElementsByTagName('body')[0].clientHeight;
+        var w = window.innerWidth 
+        || document.documentElement.clientWidth 
+        || document.getElementsByTagName('body')[0].clientWidth;
+
+        return {width : w, height : h};
+    }
+
+    function scaleStuff () {
+        const names = ['help_content'];
+
+    	var vp = viewPort();
+
+        for (var i=0; i<names.length; i++) {
+            const idstr = names[i];
+            var b = document.getElementById (idstr);
+        	b.style.top = "10px";
+            b.style.height = ""+(vp.height - 150) + "px";
+
+        	var b = document.getElementById ("help_text");
+            b.style.height = (vp.height-200) + "px";
+            b.style.zindex = 5;
+        }
+    }
+
+    window.onresize = scaleStuff;
+    document.addEventListener ('DOMContentLoaded', function (e) {
+    	scaleStuff ();
+    });
+
+</script>
+
+</head>
+<body>
+
+    <div class="content" id='help_content'>
+        <div id='help_text'>
+            <h1>Lemmings&trade; - Help</h1>
+            <div id='help1'>
+                <h2>The Game</h2>
+                <p>Lemmings&trade; is an intriguing game in which you help hordes of
+                otherwise-mindless creatures - knows as walkers - escape hostile 
+                environments.</p>
+                <p>Lemmings&trade; drop through a trapdoor onto each screen and, as they're creatures
+                of very little brain, they need all the help they can get to survive the 
+                dangers that lie within.</p>
+                <p>To assist these cuddly, yet suicidally stupid creatures you use your mouse 
+                (similar to a lemming but it has buttons) to select a skill from the panel
+                of icons at the base of the screen, to perform that skill. You have a strict
+                time limit in which to get a required percentage of the little perishers 
+                through each level.</p>
+                <p>A quick brain, the ability to plan ahead and lifetime's dedication to save a
+                Lemming Campaign are required to get the right Lemming to perform the right
+                action at the right time. A forgotten Blocker or a misplaced bridge could 
+                spell disaster for every lemming on screen.</p>
+            </div>
+
+            <div id='help2'>
+                <h2>The Lemmings</h2>
+                <p>A lemming can do the following:
+                <ul>
+                  <li>Climb</li>
+                  <li>Float</li>
+                  <li>Blow Up Blockers (he he)</li>
+                  <li>Block</li>
+                  <li>Build Bridges</li>
+                  <li>Dig Tunnels - across, diagonally and down</li>
+                </ul></p>
+                <p>Lemmings&trade; are named after their skill; when a Lemming has a climbing skill he is called a 'Climber', when he is
+                building a bridge he is called a 'Builder' and so on.</p>
+            </div>
+
+
+            <div id='help3'>
+                <h2>Points to note</h2>
+                <p>Builders stop constructing bridges:
+                <ul>
+                  <li>When they run out of blocks</li>
+                  <li>If the bridge hits a solid object</li>
+                  <li>If the Lemming hits his head untill they fall</li>
+                </ul></p>
+                <p>Miners and diggers keep digging untill they fall.</p>
+                <p>Bashers keep digging until there is no more land in front of them.</p>
+                <p>Metal (shown as square plates and usually used to contain liquids) can not be
+                dug through or exploded away.</p>
+                <p>A Climber or Floater retain these skills untill the current level is won (or
+                lost) or untill they die - a Lemming given both these skills becomes an 
+                Athlete.</p>
+            </div>
+
+            <div id='help4'>
+                <h2>Starting a game</h2>
+                <p>Lemmings&trade; is organised into four increasingly difficult game categories: FUN,
+                TRICKY, TAXING and MAYHEM. The FUN category consists of 30 levels and is
+                designed to familiarise you with the game concept and how to work with 
+                Lemmings&trade; skill attributes. You don't have to start with this category: You
+                can go directly to any of the higher skill categories but we suggest that you
+                begin with at least a few of the levels in the FUN category to get the feel
+                of the game before proceeding to the more difficult categories.</p>
+                <p>TRICKY, TAXING and MAYHEM increase in difficulty with the MAYHEM level being the most 
+                difficult. Each of the game categories has 30 levels*</p>
+                <p>To start a game of lemmings&trade;, just select the desired difficulty from the
+                <a href="menu.html" target="_self">main menu</a>. You will be presented a selection
+                box with the levels available for that difficulty. When you haven't played a level yet
+                the first level will be highlighted, and the code for that level will be already filled
+                in. Just press 'Play!' to let the action begin!</p>
+                <p>* Note that because this is just work in progress not all levels and difficulties are available yet.</p>
+            </div>
+
+            <div id='help5'>
+                <h2>Passwords</h2>
+                <p>Each level in Lemmings&trade; requires a password to be played. You only receive
+                the password for a next level once you have completed a level. This password
+                will automatically be added to the game selection screen, on which also is
+                indicated which levels you already completed.</p>
+                <p>The original game accepted multiple passwords for a single level; this
+                version has fixed passwords per level, so a passwords found on the internet
+                for a specific level may not work in this game!</p>
+                <p>The passwords and the levels completed are stored in cookies; if you don't
+                accept cookies, or cleaned up your cookies you will have to start from scratch
+                the next time you play DHTML Lemmings&trade;.</p>
+            </div>
+
+            <div id='help6'>
+                <h2>Controls</h2>
+                <p>Lemmings&trade; is normally played with the mouse. You can select a skill from one of the icons at the bottom
+                of the screen by clicking on it (the button becomes animated) and than pointing and clicking on a lemming.
+                You can see which lemming will be selected by the target area surrounding the lemming when you hover over it
+                with your mouse. The statusbar on the bottom-left will show you the current skill of the selected lemming and
+                it's number (lemmings&trade; don't have names).<br />If you press the right or left arrow on your keyboard, you will only target lemmings&trade; that go right or left at that moment.</p>
+                <p>Not all skills are available in every level; the number in the icon will tell you how many of each skill
+                you can use. If it doesn't show a number than that skill is unavailable in that particular level.</p>
+                <p>All icons will show you it's purpose when you hover over it.</p>
+                <p>Furthermore notice the scrollbar; many levels extend beyond the visible part of the screen.
+                If you cannot find the exit, try scrolling left or right.</p>
+            </div>
+
+            <div id='help7'>
+                <h2>Icons Explained</h2>
+                <p>From left to right these are the icons and their alternative keys:</p>
+                <ul>
+                  <li>Climber - Climbs vertical surfaces ('R')</li>
+                  <li>Floater - A brolly opens to ensure a safe descent ('S')</li>
+                  <li>Exploder - Bomb to dispatch single Lemmings&trade; (one way to get rid of Blockers) ('T')</li>
+                  <li>Blocker - stands with arms outstretched to block the passage of fellow Lemmings&trade; ('U')</li>
+                  <li>Builder - builds bridges, each limited to twelve steps.
+                      When a Lemming has laid his twelfth brick he turns to look at you for a
+                      moment... if you click on him again he will continue building. ('V')</li>
+                  <li>Basher - digs horizontally, will only dig when a suitible surface is 
+                      directly ahead of him. ('W')</li>
+                  <li>Miner - uses a pick to dig diagonally down ('X')</li>
+                  <li>Digger - burrows vertically ('Y')</li>
+                  <li>Increase flow of Lemmings&trade; on to the level ('P')</li>
+                  <li>Decrease flow of Lemmings&trade; on to the level up to the displayed minimum ('Q')</li>
+                  <li>Pause - gives you time to think ('Z')</li>
+                  <li>Fast Forward - once the road has been laid out by your scouts you can use this button to quickly
+                      advance all the remaining lemmings&trade; to the exit. Note that the time will run faster too!</li>
+                  <li>Nuke all lemmings&trade; - should you find yourself in a 'no-win'
+                      situation (double-press to activate) ('{')</li>
+                </ul>
+            </div>
+
+            <div id='help8'>
+                <h2>Other Controls</h2>
+                <p>On the very bottom of the screen, next to the statusbar are a couple more fields that give you information during the game:<br />
+                'Out' tells you how many lemmings&trade; are currently walking about the level<br />
+                'Home' tells you how many lemmings&trade; have safely made it to the exit<br />
+                'Time' tells you how many time you still have left in the game</p>
+                <p>Furthermore the following keys can be used to control sound and animations during play:<br /><br />
+                1 - turns music and sound off during the level<br />
+                2 - turns music and sound on during the level<br />
+                3 - turns animations off during the level<br />
+                4 - turns animations on during the level<br />
+                <br />Don't use you numpad for these keys; that won't work.<br />Note that if you want to have these options applied to all levels, you need to set the options in the main menu.</p>
+                <p>Last but not least you can use the '/' key to immediately quit a level and return to the main menu.</p>
+            </div>
+
+            <div id='help9'>
+                <h2>Requirements</h2>
+                <p>Unlike the original game DHTML lemmings&trade; requires a lot of resources (around 10 - 20MB of memory) and a fast
+                processor to run smoothly. A 500MHz processor will do, but above 1GHz it becomes much more enjoyable. You will need
+                at least a 2GHz processor for the fast forward mode to work correctely (AMD's are faster than P4's :P )</p>
+                <p>Javascript isn't a fast programming language because it needs to be interpreted at execution time. However it does
+                have the advantage that most browsers are javascript enabled, so you won't need anything more than a modern browser.</p>
+                <p>DHTML Lemmings&trade; has been written to work in IE5.5 and above and in recent Mozilla versions (around 1.3 and higher). Other
+                browsers (such as Opera) may or may not be able to run DHTML Lemmings&trade;</p>
+                <p>Note that this project is a work in progress, by no means is this version complete and free of bugs; feel free to report anything
+                unusual to me.</p>
+                <p>You can also run lemmings&trade; offline, the complete sourcecode (except for elements that may be copyrighted) can be found <a href="http://www.xs4all.nl/~crisp/lemmings/lemmings.zip" target="_blank" onfocus="this.blur()">here</a>
+                and I also have a PHP script to generate the JS levelcode with examples which can be found <a href="http://www.xs4all.nl/~crisp/lemmings/makelevel.zip" target="_blank" onfocus="this.blur()">here</a>.<br />
+                Give your active desktop a nice tough with walking lemmings&trade;; example page is <a href="http://www.xs4all.nl/~crisp/lemmings/desktop.html" target="_blank" onfocus="this.blur()">here</a>.</p>
+            </div>
+
+            <div id='help10'>
+                <h2>Acknowledgements</h2>
+                <p>First of all here's the place to acknowledge the original copyrightholders for Lemmings&trade;;
+                Lemmings&trade; is a registered trademark owned at this moment probably by Take 2 Games who took over DMA Design
+                somewhere in the 90's.<br />
+                The Lemmings&trade; concept isn't actively used anymore, but it is also not abandonware. I may be
+                infringing some of their copyrights with this version of their game, but I'm trying to get permission.</p>
+                <p>Further acknowledgements go to:</p>
+                <ul>
+                  <li>Ernst Vaarties for his <a href="http://home.wanadoo.nl/lemmings-solution/" target="_blank" onfocus="this.blur()">site</a> with all level screenprints (DOS version)</li>
+                  <li><a href="http://www.utahdesign.com/lemmings/index.shtml" target="_blank" onfocus="this.blur()">The Lemmings&trade; Universe</a> where I found a lot of Lemmings&trade; information (nice forum too)</li>
+                  <li><a href="http://www.kallex.de/lemmings/" target="_blank" onfocus="this.blur()">World of Lemmings&trade;</a> also lots of information</li>
+                  <li><a href="http://www.deinonych.com/lemmings/" target="_blank" onfocus="this.blur()">The Lemmings&trade; Compendium</a> Not actively updated anymore, but my first re-encounter with lemmings&trade;</li>
+                  <li>Some unknown author of lemming <a href="http://www.kallex.de/lemmings/misc/instructions.txt" target="_blank" onfocus="this.blur()">instructions</a> of which I used a lot for this FAQ</li>
+                  <li><a href="http://gathering.tweakers.net" target="_blank" onfocus="this.blur()">GoT</a> The best forum in the world! (Dutch spoken)</li>
+                  <li>Everyone that supported me, send me praise and bugreports and played the game</li>
+                </ul>
+            </div>
+
+            <div id="license">
+                <h2>GNU Copyright Information</h2>
+                <p>DHTML Lemmings&trade; has been created by <a href="mailto:freesoftware@xs4all.nl" target="_blank" onfocus="this.blur()">crisp</a>
+                    and all related objects are marked "<a href="gpl.txt" target="_self" onfocus="this.blur()">GNU Copyright</a>".
+                    Unlike items not so marked, these GPL items are copyrighted by their author and available to others subject to the GNU General Public License.
+                    Below is a more complete copyright notice for computer programs of this type:</p>
+                <pre>
+Copyright &copy; 2004 crisp - freesoftware[at]xs4all.nl
+
+This program is free software; you can redistribute it and/or modify it under the
+terms of the GNU General Public License as published by the Free Software Foundation;
+either version 2 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation,
+Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+Further to the terms mentioned you should leave the copyright footers and
+copyright notice in the HTML headers intact, stating me as the original author.
+                </pre>
+            </div>
+
+        </div>
+        <img id="lemmingLeft" src="../img/lemming_left.gif" alt="" />
+        <img id="lemmingRight" src="../img/lemming_right.gif" alt="" />
+    </div>
+
+
+</body>
+</html>
