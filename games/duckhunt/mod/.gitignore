@@ -1,0 +1,9 @@
+dist/audio.json
+dist/audio.mp3
+dist/audio.ogg
+dist/duckhunt.js
+dist/duckhunt.js.map
+dist/sprites.json
+dist/sprites.png
+node_modules
+src/modules/encodedPng.js
