@@ -19,7 +19,7 @@
     "coffee-script": "1",
     "faye-websocket": "0.4",
     "connect": "2",
-    "browserify": "1.10"
+    "browserify": "1.18.0"
   },
   "scripts": {
     "server": "./bin/bolo-server bolo-config.json"
