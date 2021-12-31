@@ -54,6 +54,4 @@ Clean all games     | `./build.sh clean_all`                | Remove all generat
 Clean a single game | `./build.sh clean <name_of_game_dir>` | e.g. `./build.sh clean racer10k`
 Create `arcade.zip` |`./build.sh arcade`                    | Only games that have been built are included in the zip file.
 
-Building all games requires about 1.3Gb of disk space.
-
-Building most games requires [Node](http://nodejs.org); some require external tools be installed.
+Building all games requires about 2 Gb of disk space.
