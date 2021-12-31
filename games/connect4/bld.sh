@@ -5,11 +5,13 @@ set -e
 
 function do_build {
     rm -rf play
-
     cd mod/browser
     npm install
     npm install yarn
-    npm install parcel
+    # Force v1.12.3 because v1.12.4 causes error:
+    #    app.ts: Invalid Version: undefined
+    # See https://github.com/parcel-bundler/parcel/issues/5943
+    npm install parcel@1.12.3
     npm run-script build
     cd ../..
 
