@@ -49,11 +49,11 @@ None of the games in this collection were written by the curator.
 Action |  Description | Notes
 -------|--------------|---------
 Build all games     | `./build.sh build_all`                | Creates the `play` directory for each game
-Build a single game | `./build.sh build <name_of_game_dir>` | e.g. `/build.sh build racer10k`
+Build a single game | `./build.sh game <name_of_game_dir>` | e.g. `./build.sh game racer10k`
 Clean all games     | `./build.sh clean_all`                | Remove all generated files and dirs (e.g. `node_modules`, `play`)
-Clean a single game | `./build.sh build <name_of_game_dir>` | e.g. `/build.sh clean racer10k`
+Clean a single game | `./build.sh clean <name_of_game_dir>` | e.g. `./build.sh clean racer10k`
 Create `arcade.zip` |`./build.sh arcade`                    | Only games that have been built are included in the zip file.
 
-Building all games takes about 20 minutes and requires about 1.3Gb of disk space.
+Building all games requires about 1.3Gb of disk space.
 
 Building most games requires [Node](http://nodejs.org); some require external tools be installed.
