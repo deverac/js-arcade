@@ -2,6 +2,8 @@ This is a curated collection of Javascript games that have been modified to run 
 
 To run, unzip [arcade.zip](../../raw/master/arcade.zip), and open `./arcade/index.html` in your browser.
 
+Although, neither an internet connection nor a local server is required, one may be used if desired. An online version of js-arcade is available at: <https://deverac.github.io/js-arcade/>.
+
 ### Keys
  Key   |  Action
 -------|--------------
