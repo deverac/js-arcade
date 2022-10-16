@@ -1,7 +1,0 @@
-node_modules
-
-package-lock.json
-scripts/asteroids.min.js
-scripts/asteroids.min.js.map
-scripts/gamelib.min.js
-scripts/mathlib.min.js

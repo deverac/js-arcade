@@ -1,8 +1,0 @@
-browser/.cache
-browser/node_modules
-browser/dist/app.*.js
-browser/dist/app.*.js.map
-browser/dist/app.*.css
-browser/dist/app.*.css.map
-browser/dist/index.html
-browser/package-lock.json
